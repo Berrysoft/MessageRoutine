@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace MessageRoutine
 {
@@ -21,7 +22,7 @@ namespace MessageRoutine
         private readonly Dictionary<Type, object> services;
         private readonly Dictionary<Type, object> singletons;
 
-        private Routine? InvokeRoutine(Type? type, MethodInfo? method, string message, object? param)
+        private object? InvokeRoutineInternal(Type? type, MethodInfo? method, string message, object? param)
         {
             if (method != null && type != null && services.TryGetValue(type, out object service))
             {
@@ -40,12 +41,38 @@ namespace MessageRoutine
                         break;
                     }
                 }
-                if (method.Invoke(service, paramsArray) is Routine next)
-                {
-                    return next;
-                }
+                return method.Invoke(service, paramsArray);
             }
             return null;
+        }
+
+        private Routine? InvokeRoutine(Type? type, MethodInfo? method, string message, object? param)
+        {
+            if (InvokeRoutineInternal(type, method, message, param) is Routine routine)
+            {
+                return routine;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private async Task<Routine?> InvokeRoutineAsync(Type? type, MethodInfo? method, string message, object? param)
+        {
+            object? result = InvokeRoutineInternal(type, method, message, param);
+            if (result is Routine routine)
+            {
+                return routine;
+            }
+            else if (result != null)
+            {
+                return await (dynamic)result;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private (Type?, MethodInfo?) FindMethod(Routine routine)
@@ -88,11 +115,37 @@ namespace MessageRoutine
 
         public object? StartRoutine(string? message, object? parameter) => StartRoutine(new Routine(message, parameter));
 
-        public T StartRoutine<T>(string? message, object? parameter) => StartRoutine(message, parameter) is T result ? result : default;
+        public T StartRoutine<T>(string? message, object? parameter) => StartRoutine<T>(new Routine(message, parameter));
 
         public object? StartRoutine(string? message) => StartRoutine(message, null);
 
         public T StartRoutine<T>(string? message) => StartRoutine<T>(message, null);
+
+        public async Task<object?> StartRoutineAsync(Routine routine)
+        {
+            while (routine.Message != null)
+            {
+                var (type, method) = FindMethod(routine);
+                Routine? next = await InvokeRoutineAsync(type, method, routine.Message, routine.Parameter);
+                if (next != null)
+                {
+                    routine = next.Value;
+                    continue;
+                }
+                routine.Message = null;
+            }
+            return routine.Parameter;
+        }
+
+        public async Task<T> StartRoutineAsync<T>(Routine routine) => await StartRoutineAsync(routine) is T result ? result : default;
+
+        public Task<object?> StartRoutineAsync(string? message, object? parameter) => StartRoutineAsync(new Routine(message, parameter));
+
+        public Task<T> StartRoutineAsync<T>(string? message, object? parameter) => StartRoutineAsync<T>(new Routine(message, parameter));
+
+        public Task<object?> StartRoutineAsync(string? message) => StartRoutineAsync(message, null);
+
+        public Task<T> StartRoutineAsync<T>(string? message) => StartRoutineAsync<T>(message, null);
 
         public MessageManager RegisterService(Type serviceType)
         {
