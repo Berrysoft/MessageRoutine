@@ -18,8 +18,7 @@ namespace MessageRoutine.Sample
         [Message("App.Main")]
         public Routine Main()
         {
-            if (Configuration != null)
-                Console.WriteLine(Configuration.OutputMessage);
+            Console.WriteLine(Configuration!.OutputMessage);
             return new Routine();
         }
     }
