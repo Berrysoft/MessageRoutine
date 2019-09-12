@@ -10,7 +10,8 @@ namespace MessageRoutine.Sample.Wpf.Services
         [Message(Program.TextServiceGetMessage)]
         public async Task<Routine> GetTextAsync()
         {
-            return new Routine(null, await File.ReadAllTextAsync("DataFile.txt"));
+            using StreamReader reader = new StreamReader("DataFile.txt");
+            return new Routine(null, await reader.ReadToEndAsync());
         }
     }
 }
