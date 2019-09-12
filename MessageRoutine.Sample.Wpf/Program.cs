@@ -1,4 +1,8 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
+using System.Net.Http;
+using MessageRoutine.Sample.Wpf.Services;
 
 namespace MessageRoutine.Sample.Wpf
 {
@@ -6,16 +10,21 @@ namespace MessageRoutine.Sample.Wpf
     {
         public static readonly MessageManager Manager = new MessageManager();
 
+        public const string ProgramStartupMessage = "Program.Startup";
+        public const string TextServiceGetMessage = "TextService.Get";
+
         [STAThread]
         public static int Main() => Manager
             .RegisterSingleton<App>()
+            .RegisterSingleton<HttpClient>()
             .RegisterService<Program>()
-            .StartRoutine<int>("Program.Startup");
+            .RegisterService<MemoryService>()
+            .StartRoutine<int>(ProgramStartupMessage);
 
         [Inject]
-        protected App App { get; set; }
+        protected App? App { get; set; }
 
-        [Message("Program.Startup")]
-        public Routine Startup() => new Routine(null, App.Run());
+        [Message(ProgramStartupMessage)]
+        public Routine Startup() => new Routine(null, App!.Run());
     }
 }

@@ -2,11 +2,11 @@
 
 using System.Windows;
 
-namespace MessageRoutine.Sample.Wpf
+namespace MessageRoutine.Sample.Wpf.Views
 {
-    public partial class App : Application
+    public partial class MainWindow : Window
     {
-        public App()
+        public MainWindow()
         {
             InitializeComponent();
         }
