@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace MessageRoutine.Sample
+﻿namespace MessageRoutine.Sample
 {
     interface IConfiguration
     {

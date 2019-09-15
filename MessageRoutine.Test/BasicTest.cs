@@ -1,5 +1,3 @@
-#nullable enable
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MessageRoutine.Test

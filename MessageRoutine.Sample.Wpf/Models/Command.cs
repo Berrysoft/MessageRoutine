@@ -1,23 +1,27 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Windows.Input;
 
 namespace MessageRoutine.Sample.Wpf.Models
 {
-    public class Command : ICommand
+    public class MessageAsyncCommand<T> : ICommand
     {
 #pragma warning disable 0067
         public event EventHandler? CanExecuteChanged;
 #pragma warning restore 0067
 
-        public Action? Action { get; }
+        public Action<T>? Action { get; }
+        public string Message { get; }
 
-        public Command() : this(null) { }
-        public Command(Action? action) => Action = action;
+        public MessageAsyncCommand(string message) : this(message, null) { }
+        public MessageAsyncCommand(string message, Action<T>? action)
+        {
+            Message = message;
+            Action = action;
+        }
 
         public bool CanExecute(object parameter) => true;
 
-        public void Execute(object parameter) => Action?.Invoke();
+        public async void Execute(object parameter)
+            => Action?.Invoke(await Program.Manager.StartRoutineAsync<T>(Message, parameter));
     }
 }

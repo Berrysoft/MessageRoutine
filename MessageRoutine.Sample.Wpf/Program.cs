@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System;
+﻿using System;
 using System.Net.Http;
 using MessageRoutine.Sample.Wpf.Services;
 

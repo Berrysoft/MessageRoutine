@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Input;
 using MessageRoutine.Sample.Wpf.Models;
 using MessageRoutine.Sample.Wpf.Services;
@@ -22,10 +20,7 @@ namespace MessageRoutine.Sample.Wpf.ViewModels
 
         public MainViewModel()
         {
-            GetTextCommand = new Command(async () =>
-            {
-                Text = await Program.Manager.StartRoutineAsync<string?>(Program.TextServiceGetMessage);
-            });
+            GetTextCommand = new MessageAsyncCommand<string?>(Program.TextServiceGetMessage, text => Text = text);
         }
 
         public MainServiceType ServiceType { get; set; }

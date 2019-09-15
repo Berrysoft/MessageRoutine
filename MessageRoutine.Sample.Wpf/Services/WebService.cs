@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace MessageRoutine.Sample.Wpf.Services

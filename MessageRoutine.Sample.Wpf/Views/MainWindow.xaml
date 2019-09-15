@@ -16,8 +16,8 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Label VerticalContentAlignment="Center">Service type:</Label>
-            <ComboBox Margin="8" SelectedValue="{Binding ServiceType,Mode=TwoWay}">
+            <Label Margin="8" VerticalContentAlignment="Center">Service type:</Label>
+            <ComboBox Margin="8" Width="80" SelectedValue="{Binding ServiceType,Mode=TwoWay}">
                 <vms:MainServiceType>Memory</vms:MainServiceType>
                 <vms:MainServiceType>File</vms:MainServiceType>
                 <vms:MainServiceType>Web</vms:MainServiceType>
